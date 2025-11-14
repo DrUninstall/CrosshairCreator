@@ -36,6 +36,33 @@
                             <input type="file" id="crosshairImageUpload" accept="image/png,image/jpg,image/jpeg">
                         </div>
 
+                        <div id="customCrosshairControls" style="display: none;">
+                            <div class="setting-group">
+                                <label>Position X: <span id="customOffsetXValue">0</span>px</label>
+                                <input type="range" id="crosshairOffsetX" min="-200" max="200" value="0">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Position Y: <span id="customOffsetYValue">0</span>px</label>
+                                <input type="range" id="crosshairOffsetY" min="-200" max="200" value="0">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Scale: <span id="customScaleValue">50</span>px</label>
+                                <input type="range" id="crosshairCustomScale" min="10" max="200" value="50">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Scale X: <span id="customScaleXValue">100</span>%</label>
+                                <input type="range" id="crosshairScaleX" min="10" max="200" value="100">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Scale Y: <span id="customScaleYValue">100</span>%</label>
+                                <input type="range" id="crosshairScaleY" min="10" max="200" value="100">
+                            </div>
+                        </div>
+
                         <div class="setting-group">
                             <label>Gap: <span id="gapValue">4</span>px</label>
                             <input type="range" id="crosshairGap" min="0" max="50" value="4">
@@ -99,6 +126,33 @@
                                 <input type="file" id="dotImageUpload" accept="image/png,image/jpg,image/jpeg">
                             </div>
 
+                            <div id="customDotControls" style="display: none;">
+                                <div class="setting-group">
+                                    <label>Position X: <span id="dotOffsetXValue">0</span>px</label>
+                                    <input type="range" id="dotOffsetX" min="-200" max="200" value="0">
+                                </div>
+
+                                <div class="setting-group">
+                                    <label>Position Y: <span id="dotOffsetYValue">0</span>px</label>
+                                    <input type="range" id="dotOffsetY" min="-200" max="200" value="0">
+                                </div>
+
+                                <div class="setting-group">
+                                    <label>Scale: <span id="dotCustomScaleValue">50</span>px</label>
+                                    <input type="range" id="dotCustomScale" min="10" max="200" value="50">
+                                </div>
+
+                                <div class="setting-group">
+                                    <label>Scale X: <span id="dotScaleXValue">100</span>%</label>
+                                    <input type="range" id="dotScaleX" min="10" max="200" value="100">
+                                </div>
+
+                                <div class="setting-group">
+                                    <label>Scale Y: <span id="dotScaleYValue">100</span>%</label>
+                                    <input type="range" id="dotScaleY" min="10" max="200" value="100">
+                                </div>
+                            </div>
+
                             <div class="setting-group">
                                 <label>Dot Size: <span id="dotSizeValue">4</span>px</label>
                                 <input type="range" id="dotSize" min="1" max="50" value="4">
@@ -160,18 +214,6 @@
                         </div>
                     </section>
 
-                    <!-- Presets -->
-                    <section class="settings-section">
-                        <h2>Game Presets</h2>
-                        <div class="preset-buttons">
-                            <button class="preset-btn" data-preset="valorant">VALORANT</button>
-                            <button class="preset-btn" data-preset="overwatch">Overwatch 2</button>
-                            <button class="preset-btn" data-preset="cs2">CS2</button>
-                            <button class="preset-btn" data-preset="marvel">Marvel Rivals</button>
-                            <button class="preset-btn" data-preset="fortnite">Fortnite</button>
-                        </div>
-                    </section>
-
                     <!-- Import Crosshair -->
                     <section class="settings-section">
                         <h2>Import Crosshair</h2>
@@ -217,25 +259,14 @@
                 </div>
             </div>
 
-            <!-- Right Panel - Community -->
+            <!-- Right Panel - Bookmarks -->
             <div class="community-panel">
                 <div class="community-header">
-                    <h3>Community Crosshairs</h3>
-                    <div class="community-tabs">
-                        <button class="tab-btn active" data-tab="popular">Popular</button>
-                        <button class="tab-btn" data-tab="bookmarks">Bookmarks</button>
-                    </div>
+                    <h3>Saved Crosshairs</h3>
                 </div>
                 <div class="community-content">
-                    <div id="popularTab" class="tab-content active">
-                        <div class="crosshair-grid" id="popularCrosshairs">
-                            <!-- Community crosshairs will be populated here -->
-                        </div>
-                    </div>
-                    <div id="bookmarksTab" class="tab-content">
-                        <div class="crosshair-grid" id="bookmarkedCrosshairs">
-                            <p class="empty-state">No bookmarks yet. Save your favorite crosshairs!</p>
-                        </div>
+                    <div class="crosshair-grid" id="bookmarkedCrosshairs">
+                        <p class="empty-state">No bookmarks yet. Save your favorite crosshairs!</p>
                     </div>
                 </div>
             </div>

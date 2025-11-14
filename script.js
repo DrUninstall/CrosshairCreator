@@ -19,7 +19,12 @@ class CrosshairCreator {
                 opacity: 100,
                 outlineColor: '#000000',
                 customImage: null,
-                pixelData: null
+                pixelData: null,
+                customOffsetX: 0,
+                customOffsetY: 0,
+                customScale: 50,
+                customScaleX: 100,
+                customScaleY: 100
             },
             dot: {
                 enabled: false,
@@ -31,7 +36,12 @@ class CrosshairCreator {
                 outlineColor: '#000000',
                 outlineOpacity: 100,
                 customImage: null,
-                pixelData: null
+                pixelData: null,
+                customOffsetX: 0,
+                customOffsetY: 0,
+                customScale: 50,
+                customScaleX: 100,
+                customScaleY: 100
             },
             overlay: {
                 enabled: false,
@@ -54,7 +64,6 @@ class CrosshairCreator {
         this.setupEventListeners();
         this.initializePixelCanvas();
         this.draw();
-        this.loadCommunityPresets();
     }
 
     setupEventListeners() {
@@ -74,6 +83,13 @@ class CrosshairCreator {
         this.addRangeListener('crosshairThickness', 'thickness', 'crosshair', 'thicknessValue');
         this.addRangeListener('crosshairOutlineThickness', 'outlineThickness', 'crosshair', 'outlineThicknessValue');
         this.addRangeListener('crosshairOpacity', 'opacity', 'crosshair', 'opacityValue');
+
+        // Custom PNG crosshair controls
+        this.addRangeListener('crosshairOffsetX', 'customOffsetX', 'crosshair', 'customOffsetXValue');
+        this.addRangeListener('crosshairOffsetY', 'customOffsetY', 'crosshair', 'customOffsetYValue');
+        this.addRangeListener('crosshairCustomScale', 'customScale', 'crosshair', 'customScaleValue');
+        this.addRangeListener('crosshairScaleX', 'customScaleX', 'crosshair', 'customScaleXValue');
+        this.addRangeListener('crosshairScaleY', 'customScaleY', 'crosshair', 'customScaleYValue');
 
         document.getElementById('crosshairColor').addEventListener('input', (e) => {
             this.settings.crosshair.color = e.target.value;
@@ -105,6 +121,13 @@ class CrosshairCreator {
         this.addRangeListener('dotOutlineThickness', 'outlineThickness', 'dot', 'dotOutlineThicknessValue');
         this.addRangeListener('dotOpacity', 'opacity', 'dot', 'dotOpacityValue');
         this.addRangeListener('dotOutlineOpacity', 'outlineOpacity', 'dot', 'dotOutlineOpacityValue');
+
+        // Custom PNG dot controls
+        this.addRangeListener('dotOffsetX', 'customOffsetX', 'dot', 'dotOffsetXValue');
+        this.addRangeListener('dotOffsetY', 'customOffsetY', 'dot', 'dotOffsetYValue');
+        this.addRangeListener('dotCustomScale', 'customScale', 'dot', 'dotCustomScaleValue');
+        this.addRangeListener('dotScaleX', 'customScaleX', 'dot', 'dotScaleXValue');
+        this.addRangeListener('dotScaleY', 'customScaleY', 'dot', 'dotScaleYValue');
 
         document.getElementById('dotColor').addEventListener('input', (e) => {
             this.settings.dot.color = e.target.value;
@@ -178,22 +201,6 @@ class CrosshairCreator {
             }
         });
 
-        // Preset buttons
-        document.querySelectorAll('.preset-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const preset = e.target.dataset.preset;
-                this.applyPreset(preset);
-            });
-        });
-
-        // Community tabs
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const tab = e.target.dataset.tab;
-                this.switchTab(tab);
-            });
-        });
-
         // Pixel drawer
         document.querySelector('.close-modal').addEventListener('click', () => {
             this.closePixelDrawer();
@@ -228,11 +235,17 @@ class CrosshairCreator {
             document.getElementById('customCrosshairUpload') :
             document.getElementById('customDotUpload');
 
+        const controlsDiv = type === 'crosshair' ?
+            document.getElementById('customCrosshairControls') :
+            document.getElementById('customDotControls');
+
         const style = type === 'crosshair' ?
             this.settings.crosshair.style :
             this.settings.dot.style;
 
-        uploadDiv.style.display = style === 'custom' ? 'block' : 'none';
+        const isCustom = style === 'custom';
+        uploadDiv.style.display = isCustom ? 'block' : 'none';
+        controlsDiv.style.display = isCustom ? 'block' : 'none';
     }
 
     handleImageUpload(event, type) {
@@ -419,13 +432,22 @@ class CrosshairCreator {
     }
 
     drawCrosshair(centerX, centerY) {
-        const { style, gap, length, thickness, outlineThickness, color, opacity, outlineColor, customImage, pixelData } = this.settings.crosshair;
+        const { style, gap, length, thickness, outlineThickness, color, opacity, outlineColor, customImage, pixelData, customOffsetX, customOffsetY, customScale, customScaleX, customScaleY } = this.settings.crosshair;
 
         if (style === 'custom' && customImage) {
+            this.ctx.save();
             this.ctx.globalAlpha = opacity / 100;
-            const size = 50; // Default size for custom image
-            this.ctx.drawImage(customImage, centerX - size / 2, centerY - size / 2, size, size);
-            this.ctx.globalAlpha = 1;
+
+            // Calculate final size with scale and aspect ratio adjustments
+            const baseWidth = customScale * (customScaleX / 100);
+            const baseHeight = customScale * (customScaleY / 100);
+
+            // Apply position offset
+            const x = centerX + customOffsetX - baseWidth / 2;
+            const y = centerY + customOffsetY - baseHeight / 2;
+
+            this.ctx.drawImage(customImage, x, y, baseWidth, baseHeight);
+            this.ctx.restore();
             return;
         }
 
@@ -566,12 +588,22 @@ class CrosshairCreator {
     }
 
     drawDot(centerX, centerY) {
-        const { style, size, outlineThickness, color, opacity, outlineColor, outlineOpacity, customImage, pixelData } = this.settings.dot;
+        const { style, size, outlineThickness, color, opacity, outlineColor, outlineOpacity, customImage, pixelData, customOffsetX, customOffsetY, customScale, customScaleX, customScaleY } = this.settings.dot;
 
         if (style === 'custom' && customImage) {
+            this.ctx.save();
             this.ctx.globalAlpha = opacity / 100;
-            this.ctx.drawImage(customImage, centerX - size / 2, centerY - size / 2, size, size);
-            this.ctx.globalAlpha = 1;
+
+            // Calculate final size with scale and aspect ratio adjustments
+            const baseWidth = customScale * (customScaleX / 100);
+            const baseHeight = customScale * (customScaleY / 100);
+
+            // Apply position offset
+            const x = centerX + customOffsetX - baseWidth / 2;
+            const y = centerY + customOffsetY - baseHeight / 2;
+
+            this.ctx.drawImage(customImage, x, y, baseWidth, baseHeight);
+            this.ctx.restore();
             return;
         }
 
@@ -772,7 +804,12 @@ class CrosshairCreator {
                 opacity: 100,
                 outlineColor: '#000000',
                 customImage: null,
-                pixelData: null
+                pixelData: null,
+                customOffsetX: 0,
+                customOffsetY: 0,
+                customScale: 50,
+                customScaleX: 100,
+                customScaleY: 100
             },
             dot: {
                 enabled: false,
@@ -784,7 +821,12 @@ class CrosshairCreator {
                 outlineColor: '#000000',
                 outlineOpacity: 100,
                 customImage: null,
-                pixelData: null
+                pixelData: null,
+                customOffsetX: 0,
+                customOffsetY: 0,
+                customScale: 50,
+                customScaleX: 100,
+                customScaleY: 100
             },
             overlay: {
                 enabled: false,
@@ -916,27 +958,6 @@ class CrosshairCreator {
         });
     }
 
-    loadCommunityPresets() {
-        const communityPresets = [
-            { id: 1, name: 'TenZ VALORANT', game: 'VALORANT', settings: { crosshair: { style: 'cross', gap: 3, length: 6, thickness: 2, outlineThickness: 2, color: '#00ff99', opacity: 100, outlineColor: '#000000' }, dot: { enabled: true, style: 'circle', size: 3, outlineThickness: 2, color: '#00ff99', opacity: 100, outlineColor: '#000000', outlineOpacity: 100 }, overlay: { enabled: false }, showGrid: false } },
-            { id: 2, name: 's1mple CS2', game: 'CS2', settings: { crosshair: { style: 'cross', gap: 0, length: 8, thickness: 1, outlineThickness: 1, color: '#00ff00', opacity: 100, outlineColor: '#000000' }, dot: { enabled: false }, overlay: { enabled: false }, showGrid: false } },
-            { id: 3, name: 'Classic OW2', game: 'Overwatch 2', settings: { crosshair: { style: 'circle', gap: 10, length: 5, thickness: 2, outlineThickness: 1, color: '#00ff00', opacity: 100, outlineColor: '#000000' }, dot: { enabled: true, style: 'circle', size: 4, outlineThickness: 1, color: '#00ff00', opacity: 100, outlineColor: '#000000', outlineOpacity: 100 }, overlay: { enabled: false }, showGrid: false } },
-            { id: 4, name: 'Shroud Special', game: 'CS2', settings: { crosshair: { style: 'cross', gap: 2, length: 7, thickness: 1, outlineThickness: 1, color: '#ffff00', opacity: 100, outlineColor: '#000000' }, dot: { enabled: true, style: 'circle', size: 2, outlineThickness: 1, color: '#ffff00', opacity: 100, outlineColor: '#000000', outlineOpacity: 100 }, overlay: { enabled: false }, showGrid: false } },
-            { id: 5, name: 'Ninja Fortnite', game: 'Fortnite', settings: { crosshair: { style: 'cross', gap: 2, length: 12, thickness: 2, outlineThickness: 1, color: '#ffffff', opacity: 80, outlineColor: '#000000' }, dot: { enabled: true, style: 'circle', size: 3, outlineThickness: 1, color: '#ffffff', opacity: 80, outlineColor: '#000000', outlineOpacity: 100 }, overlay: { enabled: false }, showGrid: false } }
-        ];
-
-        const container = document.getElementById('popularCrosshairs');
-        container.innerHTML = '';
-        communityPresets.forEach(preset => {
-            const item = this.createCrosshairItem(preset, () => {
-                this.settings = JSON.parse(JSON.stringify(preset.settings));
-                this.updateUIFromSettings();
-                this.draw();
-            });
-            container.appendChild(item);
-        });
-    }
-
     createCrosshairItem(data, onClick) {
         const item = document.createElement('div');
         item.className = 'crosshair-item';
@@ -982,24 +1003,6 @@ class CrosshairCreator {
         item.appendChild(info);
 
         return item;
-    }
-
-    switchTab(tab) {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-
-        if (tab === 'popular') {
-            document.getElementById('popularTab').classList.add('active');
-        } else if (tab === 'bookmarks') {
-            document.getElementById('bookmarksTab').classList.add('active');
-            this.renderBookmarks();
-        }
     }
 
     handleCanvasHover(e) {
