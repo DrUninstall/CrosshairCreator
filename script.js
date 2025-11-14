@@ -167,6 +167,17 @@ class CrosshairCreator {
             this.shareCrosshair();
         });
 
+        document.getElementById('importBtn').addEventListener('click', () => {
+            this.importCrosshair();
+        });
+
+        // Allow Enter key to import
+        document.getElementById('importInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.importCrosshair();
+            }
+        });
+
         // Preset buttons
         document.querySelectorAll('.preset-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -805,13 +816,77 @@ class CrosshairCreator {
     shareCrosshair() {
         const settingsString = JSON.stringify(this.settings);
         const encodedSettings = btoa(settingsString);
-        const shareUrl = `${window.location.origin}${window.location.pathname}?crosshair=${encodedSettings}`;
+
+        // Generate a short 6-character hash from the encoded settings
+        const shortHash = this.generateShortHash(encodedSettings);
+
+        // Create clean URL with hash fragment: #abc123_encodedData
+        const shareUrl = `${window.location.origin}${window.location.pathname}#${shortHash}_${encodedSettings}`;
 
         navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('Share URL copied to clipboard!');
+            alert('Share URL copied to clipboard!\n\nUnique ID: ' + shortHash);
         }).catch(() => {
             prompt('Copy this URL to share your crosshair:', shareUrl);
         });
+    }
+
+    generateShortHash(str) {
+        // Simple hash function to create a 6-character ID
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+
+        // Convert to base36 and take first 6 characters
+        const hashStr = Math.abs(hash).toString(36).toUpperCase();
+        return hashStr.substring(0, 6).padEnd(6, '0');
+    }
+
+    importCrosshair() {
+        const input = document.getElementById('importInput').value.trim();
+
+        if (!input) {
+            alert('Please paste a crosshair ID or URL');
+            return;
+        }
+
+        try {
+            let hashData = input;
+
+            // If it's a full URL, extract the hash fragment
+            if (input.includes('http://') || input.includes('https://') || input.includes('#')) {
+                const hashIndex = input.indexOf('#');
+                if (hashIndex !== -1) {
+                    hashData = input.substring(hashIndex + 1);
+                }
+            }
+
+            // Format is: shortID_encodedData
+            const underscoreIndex = hashData.indexOf('_');
+            if (underscoreIndex === -1) {
+                alert('Invalid crosshair ID format. Expected format: 7K9MX2_eyJjcm9...');
+                return;
+            }
+
+            const shortId = hashData.substring(0, underscoreIndex);
+            const encodedSettings = hashData.substring(underscoreIndex + 1);
+
+            // Decode and load settings
+            const settings = JSON.parse(atob(encodedSettings));
+            this.settings = settings;
+            this.updateUIFromSettings();
+            this.draw();
+
+            // Clear input and show success
+            document.getElementById('importInput').value = '';
+            alert(`Successfully imported crosshair with ID: ${shortId}`);
+
+        } catch (e) {
+            console.error('Failed to import crosshair:', e);
+            alert('Failed to import crosshair. Please check the ID/URL and try again.');
+        }
     }
 
     loadBookmarks() {
@@ -936,10 +1011,32 @@ class CrosshairCreator {
 document.addEventListener('DOMContentLoaded', () => {
     const app = new CrosshairCreator();
 
-    // Load shared crosshair from URL
+    // Load shared crosshair from URL hash fragment
+    const hash = window.location.hash.substring(1); // Remove the # character
+    if (hash) {
+        try {
+            // Format is: shortID_encodedData
+            const underscoreIndex = hash.indexOf('_');
+            if (underscoreIndex !== -1) {
+                const shortId = hash.substring(0, underscoreIndex);
+                const encodedSettings = hash.substring(underscoreIndex + 1);
+
+                const settings = JSON.parse(atob(encodedSettings));
+                app.settings = settings;
+                app.updateUIFromSettings();
+                app.draw();
+
+                console.log(`Loaded crosshair with ID: ${shortId}`);
+            }
+        } catch (e) {
+            console.error('Failed to load shared crosshair:', e);
+        }
+    }
+
+    // Also support old query parameter format for backwards compatibility
     const urlParams = new URLSearchParams(window.location.search);
     const sharedCrosshair = urlParams.get('crosshair');
-    if (sharedCrosshair) {
+    if (sharedCrosshair && !hash) {
         try {
             const settings = JSON.parse(atob(sharedCrosshair));
             app.settings = settings;

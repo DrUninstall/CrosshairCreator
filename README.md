@@ -112,8 +112,22 @@ Quick-load presets for popular professional players:
 
 ### Saving and Sharing
 1. **Save**: Click "Save to Bookmarks" to store locally
-2. **Share**: Click "Share Crosshair" to get a URL
-3. **Load**: Browse community tab and click any crosshair to load it
+2. **Share**: Click "Share Crosshair" to get a clean URL with unique ID
+   - Example: `http://localhost:8000#7K9MX2_eyJjcm9zc2h...`
+   - The 6-character ID (e.g., `7K9MX2`) is generated from your settings
+   - Full crosshair data is embedded in the URL (no backend needed!)
+3. **Import**: Paste a crosshair ID or full URL in the "Import Crosshair" section
+   - Accepts: `7K9MX2_eyJjcm9zc2h...` (just the ID)
+   - Or: `http://localhost:8000#7K9MX2_eyJjcm9zc2h...` (full URL)
+   - Press Enter or click "Import Crosshair" button
+4. **Load**: Browse community tab and click any crosshair to load it
+
+#### How Sharing Works
+- **Unique IDs**: Each crosshair gets a 6-character hash ID based on its settings
+- **No Backend**: The entire crosshair data is stored in the URL fragment (after `#`)
+- **Same Settings = Same ID**: If two people create identical crosshairs, they get the same ID
+- **URL Fragments**: Data after `#` isn't sent to servers, keeping your settings private
+- **Backwards Compatible**: Old query parameter URLs (`?crosshair=...`) still work
 
 ## Technical Details
 
