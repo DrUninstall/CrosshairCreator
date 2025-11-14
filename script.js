@@ -63,6 +63,7 @@ class CrosshairCreator {
     init() {
         this.setupEventListeners();
         this.initializePixelCanvas();
+        this.setupEditableValues();
         this.draw();
     }
 
@@ -228,6 +229,83 @@ class CrosshairCreator {
             document.getElementById(valueDisplayId).textContent = value;
             this.draw();
         });
+    }
+
+    setupEditableValues() {
+        // Find all value display spans in labels
+        const valueSpans = document.querySelectorAll('.setting-group label span[id$="Value"]');
+
+        valueSpans.forEach(span => {
+            span.addEventListener('dblclick', () => {
+                this.makeValueEditable(span);
+            });
+        });
+    }
+
+    makeValueEditable(span) {
+        // Don't edit if already editing
+        if (span.classList.contains('editing')) return;
+
+        const currentValue = parseInt(span.textContent);
+        const spanId = span.id;
+
+        // Find the corresponding range input
+        const rangeInputId = spanId.replace('Value', '');
+        const rangeInput = document.getElementById(rangeInputId);
+
+        if (!rangeInput) return;
+
+        const min = parseFloat(rangeInput.min);
+        const max = parseFloat(rangeInput.max);
+
+        // Create input element
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.className = 'value-input';
+        input.value = currentValue;
+        input.min = min;
+        input.max = max;
+
+        // Mark span as editing
+        span.classList.add('editing');
+        span.textContent = '';
+        span.appendChild(input);
+
+        // Focus and select
+        input.focus();
+        input.select();
+
+        const finishEditing = () => {
+            let newValue = parseFloat(input.value);
+
+            // Validate and clamp value
+            if (isNaN(newValue)) {
+                newValue = currentValue;
+            } else {
+                newValue = Math.max(min, Math.min(max, newValue));
+            }
+
+            // Update the range input
+            rangeInput.value = newValue;
+            rangeInput.dispatchEvent(new Event('input'));
+
+            // Restore span
+            span.classList.remove('editing');
+            span.textContent = newValue;
+        };
+
+        // Handle Enter key
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                finishEditing();
+            } else if (e.key === 'Escape') {
+                span.classList.remove('editing');
+                span.textContent = currentValue;
+            }
+        });
+
+        // Handle blur
+        input.addEventListener('blur', finishEditing);
     }
 
     toggleCustomUpload(type) {

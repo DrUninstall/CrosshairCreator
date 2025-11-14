@@ -42,19 +42,17 @@ A comprehensive crosshair creation tool for gaming enthusiasts. Create, customiz
 - **2K**: 2560x1440 PNG
 - Transparent background for overlay in games
 
-### Game Presets
-Quick-load presets for popular professional players:
-- **VALORANT**: TenZ-style crosshair
-- **Overwatch 2**: Classic circle crosshair
-- **CS2**: s1mple-inspired crosshair
-- **Marvel Rivals**: Bold, visible crosshair
-- **Fortnite**: Ninja-style crosshair
+### Precise Controls
+- **Editable Values**: Double-click any slider value to type exact numbers
+- **Hover Effects**: Values highlight on hover to indicate they're clickable
+- **Keyboard Support**: Press Enter to confirm, Escape to cancel
+- **Auto-Validation**: Values automatically clamp to min/max ranges
 
 ### Community Features
 - **Save to Bookmarks**: Store your favorite crosshairs locally
-- **Share**: Generate shareable URLs for your crosshairs
-- **Browse**: Explore popular community crosshairs
-- **One-click Load**: Apply any community crosshair instantly
+- **Share**: Generate shareable URLs with unique IDs
+- **Import**: Load crosshairs by pasting IDs or URLs
+- **One-click Load**: Apply any bookmarked crosshair instantly
 
 ## How to Use
 
@@ -63,6 +61,14 @@ Quick-load presets for popular professional players:
 2. The crosshair preview appears in the center panel
 3. Adjust settings in the left panel
 4. See changes in real-time
+
+### Pro Tips
+- **Precise Values**: Double-click any number (like "35px") to type exact values instead of using sliders
+- **Quick Edit**: The value will turn into an input box - type your number and press Enter
+- **Keyboard Shortcuts**:
+  - Enter = Save value
+  - Escape = Cancel edit
+- **Visual Feedback**: Hover over any value to see it's editable (color changes and slight zoom)
 
 ### Creating a Custom Crosshair
 
