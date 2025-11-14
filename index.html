@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crosshair Creator - VALORANT, Overwatch 2, CS2, Marvel Rivals, Fortnite</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Crosshair Creator</h1>
+            <p class="subtitle">Create custom crosshairs for VALORANT, Overwatch 2, CS2, Marvel Rivals & Fortnite</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel - Settings -->
+            <div class="settings-panel">
+                <div class="settings-scroll">
+                    <!-- Crosshair Settings -->
+                    <section class="settings-section">
+                        <h2>Crosshair Settings</h2>
+
+                        <div class="setting-group">
+                            <label>Style</label>
+                            <select id="crosshairStyle">
+                                <option value="cross">Cross</option>
+                                <option value="circle">Circle</option>
+                                <option value="pixels">Pixels (Draw Your Own)</option>
+                                <option value="custom">Custom (Import PNG)</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-group" id="customCrosshairUpload" style="display: none;">
+                            <label>Upload Crosshair Image</label>
+                            <input type="file" id="crosshairImageUpload" accept="image/png,image/jpg,image/jpeg">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Gap: <span id="gapValue">4</span>px</label>
+                            <input type="range" id="crosshairGap" min="0" max="50" value="4">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Length: <span id="lengthValue">10</span>px</label>
+                            <input type="range" id="crosshairLength" min="0" max="100" value="10">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Thickness: <span id="thicknessValue">2</span>px</label>
+                            <input type="range" id="crosshairThickness" min="1" max="20" value="2">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Outline Thickness: <span id="outlineThicknessValue">1</span>px</label>
+                            <input type="range" id="crosshairOutlineThickness" min="0" max="10" value="1">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Color</label>
+                            <input type="color" id="crosshairColor" value="#00ff00">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Opacity: <span id="opacityValue">100</span>%</label>
+                            <input type="range" id="crosshairOpacity" min="0" max="100" value="100">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Outline Color</label>
+                            <input type="color" id="crosshairOutlineColor" value="#000000">
+                        </div>
+                    </section>
+
+                    <!-- Dot Settings -->
+                    <section class="settings-section">
+                        <h2>Dot Settings</h2>
+
+                        <div class="setting-group">
+                            <label>
+                                <input type="checkbox" id="dotEnabled">
+                                Enable Center Dot
+                            </label>
+                        </div>
+
+                        <div id="dotSettings" style="display: none;">
+                            <div class="setting-group">
+                                <label>Dot Style</label>
+                                <select id="dotStyle">
+                                    <option value="circle">Circle</option>
+                                    <option value="cross">Cross</option>
+                                    <option value="pixels">Pixels (Draw Your Own)</option>
+                                    <option value="custom">Custom (Import PNG)</option>
+                                </select>
+                            </div>
+
+                            <div class="setting-group" id="customDotUpload" style="display: none;">
+                                <label>Upload Dot Image</label>
+                                <input type="file" id="dotImageUpload" accept="image/png,image/jpg,image/jpeg">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Dot Size: <span id="dotSizeValue">4</span>px</label>
+                                <input type="range" id="dotSize" min="1" max="50" value="4">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Dot Outline Thickness: <span id="dotOutlineThicknessValue">1</span>px</label>
+                                <input type="range" id="dotOutlineThickness" min="0" max="10" value="1">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Dot Color</label>
+                                <input type="color" id="dotColor" value="#ffffff">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Dot Opacity: <span id="dotOpacityValue">100</span>%</label>
+                                <input type="range" id="dotOpacity" min="0" max="100" value="100">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Dot Outline Color</label>
+                                <input type="color" id="dotOutlineColor" value="#000000">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Dot Outline Opacity: <span id="dotOutlineOpacityValue">100</span>%</label>
+                                <input type="range" id="dotOutlineOpacity" min="0" max="100" value="100">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Image Overlay Settings -->
+                    <section class="settings-section">
+                        <h2>Image Overlay</h2>
+
+                        <div class="setting-group">
+                            <label>
+                                <input type="checkbox" id="overlayEnabled">
+                                Enable Image Overlay
+                            </label>
+                        </div>
+
+                        <div id="overlaySettings" style="display: none;">
+                            <div class="setting-group">
+                                <label>Upload Overlay Image</label>
+                                <input type="file" id="overlayImageUpload" accept="image/png,image/jpg,image/jpeg">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Overlay Size: <span id="overlaySizeValue">100</span>px</label>
+                                <input type="range" id="overlaySize" min="10" max="500" value="100">
+                            </div>
+
+                            <div class="setting-group">
+                                <label>Overlay Opacity: <span id="overlayOpacityValue">50</span>%</label>
+                                <input type="range" id="overlayOpacity" min="0" max="100" value="50">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Presets -->
+                    <section class="settings-section">
+                        <h2>Game Presets</h2>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" data-preset="valorant">VALORANT</button>
+                            <button class="preset-btn" data-preset="overwatch">Overwatch 2</button>
+                            <button class="preset-btn" data-preset="cs2">CS2</button>
+                            <button class="preset-btn" data-preset="marvel">Marvel Rivals</button>
+                            <button class="preset-btn" data-preset="fortnite">Fortnite</button>
+                        </div>
+                    </section>
+
+                    <!-- Actions -->
+                    <section class="settings-section">
+                        <h2>Actions</h2>
+                        <div class="action-buttons">
+                            <button class="action-btn primary" id="exportFullHD">Export FullHD (1920x1080)</button>
+                            <button class="action-btn primary" id="export2K">Export 2K (2560x1440)</button>
+                            <button class="action-btn secondary" id="resetBtn">Reset to Default</button>
+                            <button class="action-btn secondary" id="saveCrosshair">Save to Bookmarks</button>
+                            <button class="action-btn secondary" id="shareBtn">Share Crosshair</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Center Panel - Preview -->
+            <div class="preview-panel">
+                <div class="preview-header">
+                    <h3>Preview</h3>
+                    <div class="preview-controls">
+                        <label>
+                            <input type="checkbox" id="showGrid">
+                            Show Grid
+                        </label>
+                    </div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="previewCanvas" width="800" height="600"></canvas>
+                </div>
+                <div class="preview-info">
+                    <p>Click and drag to test crosshair positioning</p>
+                </div>
+            </div>
+
+            <!-- Right Panel - Community -->
+            <div class="community-panel">
+                <div class="community-header">
+                    <h3>Community Crosshairs</h3>
+                    <div class="community-tabs">
+                        <button class="tab-btn active" data-tab="popular">Popular</button>
+                        <button class="tab-btn" data-tab="bookmarks">Bookmarks</button>
+                    </div>
+                </div>
+                <div class="community-content">
+                    <div id="popularTab" class="tab-content active">
+                        <div class="crosshair-grid" id="popularCrosshairs">
+                            <!-- Community crosshairs will be populated here -->
+                        </div>
+                    </div>
+                    <div id="bookmarksTab" class="tab-content">
+                        <div class="crosshair-grid" id="bookmarkedCrosshairs">
+                            <p class="empty-state">No bookmarks yet. Save your favorite crosshairs!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pixel Drawing Modal -->
+    <div id="pixelDrawModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Draw Your Crosshair</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <canvas id="pixelCanvas" width="320" height="320"></canvas>
+                <div class="pixel-tools">
+                    <button id="pixelClear">Clear</button>
+                    <button id="pixelDone" class="primary">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
