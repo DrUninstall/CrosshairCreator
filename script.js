@@ -67,6 +67,7 @@ class CrosshairCreator {
         this.setupEventListeners();
         this.initializePixelCanvas();
         this.setupEditableValues();
+        this.resizeCanvas();
         this.draw();
     }
 
@@ -233,6 +234,21 @@ class CrosshairCreator {
             this.mouseY = null;
             this.draw();
         });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            this.resizeCanvas();
+            this.draw();
+        });
+    }
+
+    resizeCanvas() {
+        const container = this.canvas.parentElement;
+        const rect = container.getBoundingClientRect();
+
+        // Set canvas internal resolution to match display size
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
     }
 
     addRangeListener(elementId, settingKey, category, valueDisplayId) {
