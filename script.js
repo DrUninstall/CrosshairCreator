@@ -70,6 +70,7 @@ class CrosshairCreator {
         this.setupEventListeners();
         this.initializePixelCanvas();
         this.setupEditableValues();
+        this.setupPanelToggle();
         this.resizeCanvas();
         this.draw();
     }
@@ -282,6 +283,24 @@ class CrosshairCreator {
             span.addEventListener('click', () => {
                 this.makeValueEditable(span);
             });
+        });
+    }
+
+    setupPanelToggle() {
+        const panel = document.getElementById('communityPanel');
+        const toggleBtn = document.getElementById('panelToggle');
+
+        // Load saved state from localStorage
+        const isPanelCollapsed = localStorage.getItem('panelCollapsed') === 'true';
+        if (isPanelCollapsed) {
+            panel.classList.add('collapsed');
+        }
+
+        // Toggle button click handler
+        toggleBtn.addEventListener('click', () => {
+            panel.classList.toggle('collapsed');
+            const isCollapsed = panel.classList.contains('collapsed');
+            localStorage.setItem('panelCollapsed', isCollapsed);
         });
     }
 

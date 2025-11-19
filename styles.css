@@ -430,6 +430,53 @@ header h1 {
     max-height: calc(100vh - 200px);
     display: flex;
     flex-direction: column;
+    position: relative;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.community-panel.collapsed {
+    transform: translateX(calc(100% - 45px));
+}
+
+.community-panel.collapsed .community-header,
+.community-panel.collapsed .community-content {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.panel-toggle {
+    position: absolute;
+    left: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 80px;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    color: var(--accent-color);
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.panel-toggle:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+.community-panel.collapsed .toggle-icon {
+    transform: rotate(180deg);
 }
 
 .community-header {
