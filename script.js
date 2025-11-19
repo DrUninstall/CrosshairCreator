@@ -279,7 +279,7 @@ class CrosshairCreator {
         const valueSpans = document.querySelectorAll('.setting-group label span[id$="Value"]');
 
         valueSpans.forEach(span => {
-            span.addEventListener('dblclick', () => {
+            span.addEventListener('click', () => {
                 this.makeValueEditable(span);
             });
         });
