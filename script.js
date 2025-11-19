@@ -18,6 +18,8 @@ class CrosshairCreator {
                 color: '#00ff00',
                 opacity: 100,
                 outlineColor: '#000000',
+                outlineOpacity: 100,
+                rotation: 0,
                 customImage: null,
                 pixelData: null,
                 customOffsetX: 0,
@@ -49,7 +51,8 @@ class CrosshairCreator {
                 size: 100,
                 opacity: 50
             },
-            showGrid: false
+            showGrid: false,
+            background: 'dark'
         };
 
         // State
@@ -86,8 +89,10 @@ class CrosshairCreator {
         this.addRangeListener('crosshairGap', 'gap', 'crosshair', 'gapValue');
         this.addRangeListener('crosshairLength', 'length', 'crosshair', 'lengthValue');
         this.addRangeListener('crosshairThickness', 'thickness', 'crosshair', 'thicknessValue');
+        this.addRangeListener('crosshairRotation', 'rotation', 'crosshair', 'rotationValue');
         this.addRangeListener('crosshairOutlineThickness', 'outlineThickness', 'crosshair', 'outlineThicknessValue');
         this.addRangeListener('crosshairOpacity', 'opacity', 'crosshair', 'opacityValue');
+        this.addRangeListener('crosshairOutlineOpacity', 'outlineOpacity', 'crosshair', 'outlineOpacityValue');
 
         // Custom PNG crosshair controls
         this.addRangeListener('crosshairOffsetX', 'customOffsetX', 'crosshair', 'customOffsetXValue');
@@ -171,6 +176,14 @@ class CrosshairCreator {
         document.getElementById('showGrid').addEventListener('change', (e) => {
             this.settings.showGrid = e.target.checked;
             this.draw();
+        });
+
+        // Background selection
+        document.querySelectorAll('input[name="background"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.settings.background = e.target.value;
+                this.draw();
+            });
         });
 
         // Export buttons
@@ -498,6 +511,8 @@ class CrosshairCreator {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Draw background
+        this.drawBackground();
+
         if (this.settings.showGrid) {
             this.drawGrid();
         }
@@ -523,6 +538,39 @@ class CrosshairCreator {
         }
     }
 
+    drawBackground() {
+        const bg = this.settings.background;
+
+        if (bg === 'dark') {
+            // Dark background (default)
+            this.ctx.fillStyle = '#0d1117';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        } else if (bg === 'light') {
+            // Light background
+            this.ctx.fillStyle = '#f0f0f0';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        } else if (bg === 'marble') {
+            // Marble-like background with gradient and noise pattern
+            const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
+            gradient.addColorStop(0, '#d4d4d4');
+            gradient.addColorStop(0.5, '#e8e8e8');
+            gradient.addColorStop(1, '#c8c8c8');
+            this.ctx.fillStyle = gradient;
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+            // Add marble texture effect
+            this.ctx.globalAlpha = 0.05;
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * this.canvas.width;
+                const y = Math.random() * this.canvas.height;
+                const size = Math.random() * 50 + 10;
+                this.ctx.fillStyle = Math.random() > 0.5 ? '#ffffff' : '#888888';
+                this.ctx.fillRect(x, y, size, 2);
+            }
+            this.ctx.globalAlpha = 1.0;
+        }
+    }
+
     drawGrid() {
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
         this.ctx.lineWidth = 1;
@@ -544,7 +592,7 @@ class CrosshairCreator {
     }
 
     drawCrosshair(centerX, centerY) {
-        const { style, gap, length, thickness, outlineThickness, color, opacity, outlineColor, customImage, pixelData, customOffsetX, customOffsetY, customScale, customScaleX, customScaleY } = this.settings.crosshair;
+        const { style, gap, length, thickness, outlineThickness, color, opacity, outlineColor, outlineOpacity, rotation, customImage, pixelData, customOffsetX, customOffsetY, customScale, customScaleX, customScaleY } = this.settings.crosshair;
 
         if (style === 'custom' && customImage) {
             this.ctx.save();
@@ -571,9 +619,17 @@ class CrosshairCreator {
         this.ctx.save();
         this.ctx.globalAlpha = opacity / 100;
 
+        // Apply rotation if set
+        if (rotation !== 0) {
+            this.ctx.translate(centerX, centerY);
+            this.ctx.rotate((rotation * Math.PI) / 180);
+            this.ctx.translate(-centerX, -centerY);
+        }
+
         if (style === 'cross') {
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
                 this.ctx.lineCap = 'butt';
@@ -604,6 +660,7 @@ class CrosshairCreator {
             }
 
             // Draw main crosshair
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
             this.ctx.lineCap = 'butt';
@@ -636,6 +693,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
                 this.ctx.beginPath();
@@ -644,6 +702,7 @@ class CrosshairCreator {
             }
 
             // Draw main circle
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
             this.ctx.beginPath();
@@ -654,12 +713,14 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
                 this.ctx.strokeRect(centerX - size / 2, centerY - size / 2, size, size);
             }
 
             // Draw main square
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
             this.ctx.strokeRect(centerX - size / 2, centerY - size / 2, size, size);
@@ -669,6 +730,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
                 this.ctx.beginPath();
@@ -680,6 +742,7 @@ class CrosshairCreator {
             }
 
             // Draw main triangle
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
             this.ctx.beginPath();
@@ -694,6 +757,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
 
@@ -711,6 +775,7 @@ class CrosshairCreator {
             }
 
             // Draw main lines
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
 
@@ -731,6 +796,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
 
@@ -754,6 +820,7 @@ class CrosshairCreator {
             }
 
             // Draw main lines
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
 
@@ -784,6 +851,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
 
@@ -802,6 +870,7 @@ class CrosshairCreator {
             }
 
             // Draw main lines
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
 
@@ -823,6 +892,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
 
@@ -846,6 +916,7 @@ class CrosshairCreator {
             }
 
             // Draw main lines
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
 
@@ -872,6 +943,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
                 this.ctx.beginPath();
@@ -880,6 +952,7 @@ class CrosshairCreator {
             }
 
             // Draw main curve
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
             this.ctx.beginPath();
@@ -892,6 +965,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
 
@@ -907,6 +981,7 @@ class CrosshairCreator {
             }
 
             // Draw main curves
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
 
@@ -926,6 +1001,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
 
@@ -939,6 +1015,7 @@ class CrosshairCreator {
             }
 
             // Draw main curves
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
 
@@ -958,6 +1035,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
                 this.ctx.lineJoin = 'miter';
@@ -977,6 +1055,7 @@ class CrosshairCreator {
             }
 
             // Draw main arrow
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
             this.ctx.lineJoin = 'miter';
@@ -998,12 +1077,11 @@ class CrosshairCreator {
             const shaftWidth = thickness * 2;
             const shaftHeight = gap;
 
-            this.ctx.strokeStyle = color;
-            this.ctx.lineWidth = thickness;
             this.ctx.lineJoin = 'miter';
 
             // Draw outline for top arrow
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
 
@@ -1033,6 +1111,7 @@ class CrosshairCreator {
             }
 
             // Draw main arrows
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
 
@@ -1070,6 +1149,7 @@ class CrosshairCreator {
 
             // Draw outline
             if (outlineThickness > 0) {
+                this.ctx.globalAlpha = outlineOpacity / 100;
                 this.ctx.strokeStyle = outlineColor;
                 this.ctx.lineWidth = thickness + outlineThickness * 2;
 
@@ -1089,6 +1169,7 @@ class CrosshairCreator {
             }
 
             // Draw main brackets
+            this.ctx.globalAlpha = opacity / 100;
             this.ctx.strokeStyle = color;
             this.ctx.lineWidth = thickness;
 
@@ -1337,12 +1418,16 @@ class CrosshairCreator {
         document.getElementById('lengthValue').textContent = this.settings.crosshair.length;
         document.getElementById('crosshairThickness').value = this.settings.crosshair.thickness;
         document.getElementById('thicknessValue').textContent = this.settings.crosshair.thickness;
+        document.getElementById('crosshairRotation').value = this.settings.crosshair.rotation;
+        document.getElementById('rotationValue').textContent = this.settings.crosshair.rotation;
         document.getElementById('crosshairOutlineThickness').value = this.settings.crosshair.outlineThickness;
         document.getElementById('outlineThicknessValue').textContent = this.settings.crosshair.outlineThickness;
         document.getElementById('crosshairColor').value = this.settings.crosshair.color;
         document.getElementById('crosshairOpacity').value = this.settings.crosshair.opacity;
         document.getElementById('opacityValue').textContent = this.settings.crosshair.opacity;
         document.getElementById('crosshairOutlineColor').value = this.settings.crosshair.outlineColor;
+        document.getElementById('crosshairOutlineOpacity').value = this.settings.crosshair.outlineOpacity;
+        document.getElementById('outlineOpacityValue').textContent = this.settings.crosshair.outlineOpacity;
 
         // Update dot UI
         document.getElementById('dotEnabled').checked = this.settings.dot.enabled;
@@ -1358,6 +1443,12 @@ class CrosshairCreator {
         document.getElementById('dotOutlineColor').value = this.settings.dot.outlineColor;
         document.getElementById('dotOutlineOpacity').value = this.settings.dot.outlineOpacity;
         document.getElementById('dotOutlineOpacityValue').textContent = this.settings.dot.outlineOpacity;
+
+        // Update background selection
+        const backgroundRadio = document.querySelector(`input[name="background"][value="${this.settings.background}"]`);
+        if (backgroundRadio) {
+            backgroundRadio.checked = true;
+        }
     }
 
     resetToDefault() {
@@ -1371,6 +1462,8 @@ class CrosshairCreator {
                 color: '#00ff00',
                 opacity: 100,
                 outlineColor: '#000000',
+                outlineOpacity: 100,
+                rotation: 0,
                 customImage: null,
                 pixelData: null,
                 customOffsetX: 0,
@@ -1402,7 +1495,8 @@ class CrosshairCreator {
                 size: 100,
                 opacity: 50
             },
-            showGrid: false
+            showGrid: false,
+            background: 'dark'
         };
         this.updateUIFromSettings();
         this.draw();

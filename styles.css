@@ -375,6 +375,52 @@ header h1 {
     font-size: 0.85rem;
 }
 
+.background-selector {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.background-selector > label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.background-options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.background-options label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+.background-options label:hover {
+    border-color: var(--primary-color);
+}
+
+.background-options input[type="radio"]:checked + span {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.background-options input[type="radio"] {
+    margin: 0;
+}
+
 /* Community Panel */
 .community-panel {
     background: var(--bg-light);
