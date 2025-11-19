@@ -649,6 +649,462 @@ class CrosshairCreator {
             this.ctx.beginPath();
             this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
             this.ctx.stroke();
+        } else if (style === 'square') {
+            const size = (gap + length) * 2;
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+                this.ctx.strokeRect(centerX - size / 2, centerY - size / 2, size, size);
+            }
+
+            // Draw main square
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+            this.ctx.strokeRect(centerX - size / 2, centerY - size / 2, size, size);
+        } else if (style === 'triangle') {
+            const size = gap + length;
+            const height = size * Math.sqrt(3) / 2;
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX, centerY - height * 0.66);
+                this.ctx.lineTo(centerX + size, centerY + height * 0.33);
+                this.ctx.lineTo(centerX - size, centerY + height * 0.33);
+                this.ctx.closePath();
+                this.ctx.stroke();
+            }
+
+            // Draw main triangle
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX, centerY - height * 0.66);
+            this.ctx.lineTo(centerX + size, centerY + height * 0.33);
+            this.ctx.lineTo(centerX - size, centerY + height * 0.33);
+            this.ctx.closePath();
+            this.ctx.stroke();
+        } else if (style === 'two-lines') {
+            // Left and Right only
+            this.ctx.lineCap = 'butt';
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+
+                // Left
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX - gap, centerY);
+                this.ctx.lineTo(centerX - gap - length, centerY);
+                this.ctx.stroke();
+
+                // Right
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX + gap, centerY);
+                this.ctx.lineTo(centerX + gap + length, centerY);
+                this.ctx.stroke();
+            }
+
+            // Draw main lines
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+
+            // Left
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - gap, centerY);
+            this.ctx.lineTo(centerX - gap - length, centerY);
+            this.ctx.stroke();
+
+            // Right
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX + gap, centerY);
+            this.ctx.lineTo(centerX + gap + length, centerY);
+            this.ctx.stroke();
+        } else if (style === 'three-lines') {
+            // Left, Right, Bottom (no top)
+            this.ctx.lineCap = 'butt';
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+
+                // Bottom
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX, centerY + gap);
+                this.ctx.lineTo(centerX, centerY + gap + length);
+                this.ctx.stroke();
+
+                // Left
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX - gap, centerY);
+                this.ctx.lineTo(centerX - gap - length, centerY);
+                this.ctx.stroke();
+
+                // Right
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX + gap, centerY);
+                this.ctx.lineTo(centerX + gap + length, centerY);
+                this.ctx.stroke();
+            }
+
+            // Draw main lines
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+
+            // Bottom
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX, centerY + gap);
+            this.ctx.lineTo(centerX, centerY + gap + length);
+            this.ctx.stroke();
+
+            // Left
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - gap, centerY);
+            this.ctx.lineTo(centerX - gap - length, centerY);
+            this.ctx.stroke();
+
+            // Right
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX + gap, centerY);
+            this.ctx.lineTo(centerX + gap + length, centerY);
+            this.ctx.stroke();
+        } else if (style === 'three-angled') {
+            // Three lines at 120 degree angles (like Mercedes logo)
+            const angle1 = -Math.PI / 2; // Top
+            const angle2 = Math.PI / 6;   // Bottom right
+            const angle3 = 5 * Math.PI / 6; // Bottom left
+
+            this.ctx.lineCap = 'butt';
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+
+                [angle1, angle2, angle3].forEach(angle => {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(
+                        centerX + Math.cos(angle) * gap,
+                        centerY + Math.sin(angle) * gap
+                    );
+                    this.ctx.lineTo(
+                        centerX + Math.cos(angle) * (gap + length),
+                        centerY + Math.sin(angle) * (gap + length)
+                    );
+                    this.ctx.stroke();
+                });
+            }
+
+            // Draw main lines
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+
+            [angle1, angle2, angle3].forEach(angle => {
+                this.ctx.beginPath();
+                this.ctx.moveTo(
+                    centerX + Math.cos(angle) * gap,
+                    centerY + Math.sin(angle) * gap
+                );
+                this.ctx.lineTo(
+                    centerX + Math.cos(angle) * (gap + length),
+                    centerY + Math.sin(angle) * (gap + length)
+                );
+                this.ctx.stroke();
+            });
+        } else if (style === 't-shape') {
+            // Top, Left, Right (no bottom)
+            this.ctx.lineCap = 'butt';
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+
+                // Top
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX, centerY - gap);
+                this.ctx.lineTo(centerX, centerY - gap - length);
+                this.ctx.stroke();
+
+                // Left
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX - gap, centerY);
+                this.ctx.lineTo(centerX - gap - length, centerY);
+                this.ctx.stroke();
+
+                // Right
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX + gap, centerY);
+                this.ctx.lineTo(centerX + gap + length, centerY);
+                this.ctx.stroke();
+            }
+
+            // Draw main lines
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+
+            // Top
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX, centerY - gap);
+            this.ctx.lineTo(centerX, centerY - gap - length);
+            this.ctx.stroke();
+
+            // Left
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - gap, centerY);
+            this.ctx.lineTo(centerX - gap - length, centerY);
+            this.ctx.stroke();
+
+            // Right
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX + gap, centerY);
+            this.ctx.lineTo(centerX + gap + length, centerY);
+            this.ctx.stroke();
+        } else if (style === 'one-curve') {
+            // Semi-circle on top
+            const radius = gap + length;
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, radius, Math.PI, 0);
+                this.ctx.stroke();
+            }
+
+            // Draw main curve
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+            this.ctx.beginPath();
+            this.ctx.arc(centerX, centerY, radius, Math.PI, 0);
+            this.ctx.stroke();
+        } else if (style === 'two-curves') {
+            // Two semi-circles facing each other
+            const radius = gap + length / 2;
+            const offset = gap + length;
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+
+                // Left curve
+                this.ctx.beginPath();
+                this.ctx.arc(centerX - offset, centerY, radius, -Math.PI / 2, Math.PI / 2);
+                this.ctx.stroke();
+
+                // Right curve
+                this.ctx.beginPath();
+                this.ctx.arc(centerX + offset, centerY, radius, Math.PI / 2, -Math.PI / 2);
+                this.ctx.stroke();
+            }
+
+            // Draw main curves
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+
+            // Left curve
+            this.ctx.beginPath();
+            this.ctx.arc(centerX - offset, centerY, radius, -Math.PI / 2, Math.PI / 2);
+            this.ctx.stroke();
+
+            // Right curve
+            this.ctx.beginPath();
+            this.ctx.arc(centerX + offset, centerY, radius, Math.PI / 2, -Math.PI / 2);
+            this.ctx.stroke();
+        } else if (style === 'four-curves') {
+            // Four curved lines in circular pattern
+            const radius = gap + length;
+            const arcLength = Math.PI / 4; // 45 degrees
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+
+                for (let i = 0; i < 4; i++) {
+                    const startAngle = i * Math.PI / 2 - arcLength / 2;
+                    const endAngle = i * Math.PI / 2 + arcLength / 2;
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                    this.ctx.stroke();
+                }
+            }
+
+            // Draw main curves
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+
+            for (let i = 0; i < 4; i++) {
+                const startAngle = i * Math.PI / 2 - arcLength / 2;
+                const endAngle = i * Math.PI / 2 + arcLength / 2;
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                this.ctx.stroke();
+            }
+        } else if (style === 'arrow') {
+            // Upward pointing arrow
+            const headWidth = length;
+            const headHeight = length * 0.6;
+            const shaftWidth = thickness * 2;
+            const shaftHeight = length;
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+                this.ctx.lineJoin = 'miter';
+
+                this.ctx.beginPath();
+                // Arrow head
+                this.ctx.moveTo(centerX, centerY - gap - shaftHeight - headHeight);
+                this.ctx.lineTo(centerX + headWidth / 2, centerY - gap - shaftHeight);
+                this.ctx.lineTo(centerX + shaftWidth / 2, centerY - gap - shaftHeight);
+                // Arrow shaft
+                this.ctx.lineTo(centerX + shaftWidth / 2, centerY - gap);
+                this.ctx.lineTo(centerX - shaftWidth / 2, centerY - gap);
+                this.ctx.lineTo(centerX - shaftWidth / 2, centerY - gap - shaftHeight);
+                this.ctx.lineTo(centerX - headWidth / 2, centerY - gap - shaftHeight);
+                this.ctx.closePath();
+                this.ctx.stroke();
+            }
+
+            // Draw main arrow
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+            this.ctx.lineJoin = 'miter';
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX, centerY - gap - shaftHeight - headHeight);
+            this.ctx.lineTo(centerX + headWidth / 2, centerY - gap - shaftHeight);
+            this.ctx.lineTo(centerX + shaftWidth / 2, centerY - gap - shaftHeight);
+            this.ctx.lineTo(centerX + shaftWidth / 2, centerY - gap);
+            this.ctx.lineTo(centerX - shaftWidth / 2, centerY - gap);
+            this.ctx.lineTo(centerX - shaftWidth / 2, centerY - gap - shaftHeight);
+            this.ctx.lineTo(centerX - headWidth / 2, centerY - gap - shaftHeight);
+            this.ctx.closePath();
+            this.ctx.stroke();
+        } else if (style === 'dual-arrow') {
+            // Vertical double arrow (up and down)
+            const headWidth = length * 0.8;
+            const headHeight = length * 0.4;
+            const shaftWidth = thickness * 2;
+            const shaftHeight = gap;
+
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+            this.ctx.lineJoin = 'miter';
+
+            // Draw outline for top arrow
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+
+                // Top arrow
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX, centerY - shaftHeight - headHeight);
+                this.ctx.lineTo(centerX + headWidth / 2, centerY - shaftHeight);
+                this.ctx.lineTo(centerX + shaftWidth / 2, centerY - shaftHeight);
+                this.ctx.lineTo(centerX + shaftWidth / 2, centerY);
+                this.ctx.lineTo(centerX - shaftWidth / 2, centerY);
+                this.ctx.lineTo(centerX - shaftWidth / 2, centerY - shaftHeight);
+                this.ctx.lineTo(centerX - headWidth / 2, centerY - shaftHeight);
+                this.ctx.closePath();
+                this.ctx.stroke();
+
+                // Bottom arrow
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX, centerY + shaftHeight + headHeight);
+                this.ctx.lineTo(centerX + headWidth / 2, centerY + shaftHeight);
+                this.ctx.lineTo(centerX + shaftWidth / 2, centerY + shaftHeight);
+                this.ctx.lineTo(centerX + shaftWidth / 2, centerY);
+                this.ctx.lineTo(centerX - shaftWidth / 2, centerY);
+                this.ctx.lineTo(centerX - shaftWidth / 2, centerY + shaftHeight);
+                this.ctx.lineTo(centerX - headWidth / 2, centerY + shaftHeight);
+                this.ctx.closePath();
+                this.ctx.stroke();
+            }
+
+            // Draw main arrows
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+
+            // Top arrow
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX, centerY - shaftHeight - headHeight);
+            this.ctx.lineTo(centerX + headWidth / 2, centerY - shaftHeight);
+            this.ctx.lineTo(centerX + shaftWidth / 2, centerY - shaftHeight);
+            this.ctx.lineTo(centerX + shaftWidth / 2, centerY);
+            this.ctx.lineTo(centerX - shaftWidth / 2, centerY);
+            this.ctx.lineTo(centerX - shaftWidth / 2, centerY - shaftHeight);
+            this.ctx.lineTo(centerX - headWidth / 2, centerY - shaftHeight);
+            this.ctx.closePath();
+            this.ctx.stroke();
+
+            // Bottom arrow
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX, centerY + shaftHeight + headHeight);
+            this.ctx.lineTo(centerX + headWidth / 2, centerY + shaftHeight);
+            this.ctx.lineTo(centerX + shaftWidth / 2, centerY + shaftHeight);
+            this.ctx.lineTo(centerX + shaftWidth / 2, centerY);
+            this.ctx.lineTo(centerX - shaftWidth / 2, centerY);
+            this.ctx.lineTo(centerX - shaftWidth / 2, centerY + shaftHeight);
+            this.ctx.lineTo(centerX - headWidth / 2, centerY + shaftHeight);
+            this.ctx.closePath();
+            this.ctx.stroke();
+        } else if (style === 'angled-brackets') {
+            // Angled brackets like < > for shotguns
+            const bracketWidth = length;
+            const bracketHeight = length * 1.5;
+            const spacing = gap;
+
+            this.ctx.lineCap = 'butt';
+            this.ctx.lineJoin = 'miter';
+
+            // Draw outline
+            if (outlineThickness > 0) {
+                this.ctx.strokeStyle = outlineColor;
+                this.ctx.lineWidth = thickness + outlineThickness * 2;
+
+                // Left bracket <
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX - spacing, centerY - bracketHeight / 2);
+                this.ctx.lineTo(centerX - spacing - bracketWidth, centerY);
+                this.ctx.lineTo(centerX - spacing, centerY + bracketHeight / 2);
+                this.ctx.stroke();
+
+                // Right bracket >
+                this.ctx.beginPath();
+                this.ctx.moveTo(centerX + spacing, centerY - bracketHeight / 2);
+                this.ctx.lineTo(centerX + spacing + bracketWidth, centerY);
+                this.ctx.lineTo(centerX + spacing, centerY + bracketHeight / 2);
+                this.ctx.stroke();
+            }
+
+            // Draw main brackets
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = thickness;
+
+            // Left bracket <
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - spacing, centerY - bracketHeight / 2);
+            this.ctx.lineTo(centerX - spacing - bracketWidth, centerY);
+            this.ctx.lineTo(centerX - spacing, centerY + bracketHeight / 2);
+            this.ctx.stroke();
+
+            // Right bracket >
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX + spacing, centerY - bracketHeight / 2);
+            this.ctx.lineTo(centerX + spacing + bracketWidth, centerY);
+            this.ctx.lineTo(centerX + spacing, centerY + bracketHeight / 2);
+            this.ctx.stroke();
         }
 
         this.ctx.restore();
