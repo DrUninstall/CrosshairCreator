@@ -56,6 +56,9 @@ class CrosshairCreator {
         this.pixelDrawMode = null; // 'crosshair' or 'dot'
         this.pixelGrid = [];
         this.bookmarks = this.loadBookmarks();
+        this.mouseX = null;
+        this.mouseY = null;
+        this.isMouseOverCanvas = false;
 
         this.init();
     }
@@ -218,6 +221,17 @@ class CrosshairCreator {
         // Canvas interaction
         this.canvas.addEventListener('mousemove', (e) => {
             this.handleCanvasHover(e);
+        });
+
+        this.canvas.addEventListener('mouseenter', () => {
+            this.isMouseOverCanvas = true;
+        });
+
+        this.canvas.addEventListener('mouseleave', () => {
+            this.isMouseOverCanvas = false;
+            this.mouseX = null;
+            this.mouseY = null;
+            this.draw();
         });
     }
 
@@ -475,17 +489,21 @@ class CrosshairCreator {
         const centerX = this.canvas.width / 2;
         const centerY = this.canvas.height / 2;
 
-        // Draw crosshair
-        this.drawCrosshair(centerX, centerY);
+        // Use mouse position if hovering, otherwise center
+        const crosshairX = this.isMouseOverCanvas && this.mouseX !== null ? this.mouseX : centerX;
+        const crosshairY = this.isMouseOverCanvas && this.mouseY !== null ? this.mouseY : centerY;
 
-        // Draw overlay image
+        // Draw crosshair (follows cursor when hovering)
+        this.drawCrosshair(crosshairX, crosshairY);
+
+        // Draw overlay image (always at center, fixed/static)
         if (this.settings.overlay.enabled && this.settings.overlay.image) {
             this.drawOverlay(centerX, centerY);
         }
 
-        // Draw dot
+        // Draw dot (follows cursor when hovering)
         if (this.settings.dot.enabled) {
-            this.drawDot(centerX, centerY);
+            this.drawDot(crosshairX, crosshairY);
         }
     }
 
@@ -1084,7 +1102,10 @@ class CrosshairCreator {
     }
 
     handleCanvasHover(e) {
-        // Optional: Add dynamic preview on hover
+        const rect = this.canvas.getBoundingClientRect();
+        this.mouseX = e.clientX - rect.left;
+        this.mouseY = e.clientY - rect.top;
+        this.draw();
     }
 }
 
