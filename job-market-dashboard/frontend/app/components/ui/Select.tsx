@@ -1,0 +1,39 @@
+"use client";
+
+import { cn } from "@/app/lib/utils";
+import { SelectHTMLAttributes, forwardRef } from "react";
+
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  options: { label: string; value: string }[];
+  placeholder?: string;
+}
+
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(
+  ({ className, options, placeholder, ...props }, ref) => {
+    return (
+      <select
+        ref={ref}
+        className={cn(
+          "h-10 rounded-md border border-border bg-background px-3 py-2 text-sm",
+          "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        )}
+        {...props}
+      >
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    );
+  }
+);
+
+Select.displayName = "Select";
